@@ -87,7 +87,7 @@ count_commit(git_commit *commit)
 	if (t < mintime || t > maxtime)
 		return;
 
-	struct tm *d = gmtime(&t);
+	struct tm *d = localtime(&t);
 	stats[maxday.tm_year - d->tm_year][d->tm_mon][d->tm_mday]++;
 }
 
@@ -179,7 +179,7 @@ main(int argc, char *argv[])
 		usage();
 
 	time_t t = time(NULL);
-	gmtime_r(&t, &maxday);
+	localtime_r(&t, &maxday);
 	maxday.tm_mday += 6 - (maxday.tm_wday + 7 - first_day_of_week) % 7;
 	maxday.tm_hour = 23;
 	maxday.tm_min = 59;
