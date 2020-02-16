@@ -187,7 +187,8 @@ main(int argc, char *argv[])
 	maxtime = mktime(&maxday);
 
 	minday = maxday;
-	minday.tm_mday -= 7 * width + 1;
+	minday.tm_mday -= 7 * width;
+	minday.tm_sec += 1;
 	mintime = mktime(&minday);
 
 	int years = (maxday.tm_year - minday.tm_year + 1);
