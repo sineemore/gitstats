@@ -11,9 +11,7 @@ CFLAGS=\
 	-std=c99 \
 	-pedantic \
 	-Wall -Werror \
-	-D_DEFAULT_SOURCE \
-	-D_BSD_SOURCE \
-	-D_POSIX_C_SOURCE=2
+	-D_POSIX_C_SOURCE=200809L
 LDFLAGS=
 
 $program: $objects
