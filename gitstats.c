@@ -44,31 +44,15 @@ usage()
 static const git_oid *
 get_default_head(git_repository *repo)
 {
-	int found = 0;
 	git_reference *branch = NULL;
-	git_branch_iterator *branches;
-	git_branch_iterator_new(&branches, repo, GIT_BRANCH_REMOTE);
-	for (;;) {
-		git_branch_t dumb;
-		int rc = git_branch_next(&branch, &dumb, branches);
-		if (rc == GIT_ITEROVER)
-			break;
-
-		rc = git_branch_is_head(branch);
-		if (rc < 0)
-			gdie("branch is head");
-		if (rc) {
-			found = 1;
-			break;
-		}
-	}
-	git_branch_iterator_free(branches);
-
-	if (!found) {
-		if (0 != git_branch_lookup(&branch, repo, "master", GIT_BRANCH_LOCAL)) {
-			if (force) return NULL;
-			gdie("branch lookup");
-		}
+	if (
+		0 != git_branch_lookup(&branch, repo, "origin/HEAD", GIT_BRANCH_REMOTE) && \
+		0 != git_branch_lookup(&branch, repo, "origin/master", GIT_BRANCH_REMOTE) && \
+		0 != git_branch_lookup(&branch, repo, "master", GIT_BRANCH_LOCAL) && \
+		0 != git_branch_lookup(&branch, repo, "HEAD", GIT_BRANCH_LOCAL)
+	) {
+		if (force) return NULL;
+		gdie("can't select branch for stats");
 	}
 
 	git_reference *commit;
