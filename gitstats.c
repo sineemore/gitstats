@@ -12,8 +12,13 @@ static char *argv0;
 
 #define LEN(X) (sizeof(X) / sizeof((X)[0]))
 
+struct pattern {
+	char *email;
+	struct pattern *next;
+};
+
 static int ***stats;
-static char *email;
+static struct pattern *patterns;
 static struct tm minday, maxday;
 static time_t mintime, maxtime;
 static int force = 0;
@@ -64,14 +69,25 @@ get_default_head(git_repository *repo)
 static void
 count_commit(git_commit *commit)
 {
-	if (email && 0 != strcmp(email, git_commit_author(commit)->email))
-		return;
+	struct tm *d;
+	const git_signature *author = git_commit_author(commit);
 
-	time_t t = git_commit_author(commit)->when.time;
+	time_t t = author->when.time;
 	if (t < mintime || t > maxtime)
 		return;
 
-	struct tm *d = localtime(&t);
+	if (patterns == NULL)
+		goto match;
+
+	for (struct pattern *p = patterns; p != NULL; p = p->next) {
+		if (p->email && 0 == strcmp(p->email, author->email))
+			goto match;
+	}
+
+	return;
+
+match:
+	d = localtime(&t);
 	stats[maxday.tm_year - d->tm_year][d->tm_mon][d->tm_mday]++;
 }
 
@@ -136,12 +152,16 @@ main(int argc, char *argv[])
 	char *symbols = "░▒▓█";
 	char *placeholder = " ";
 
+	struct pattern **pp = &patterns;
+
 	ARGBEGIN {
 	case 'f':
 		force = 1;
 		break;
 	case 'e':
-		email = EARGF(usage());
+		*pp = calloc(1, sizeof(struct pattern));
+		(*pp)->email = EARGF(usage());
+		pp = &((*pp)->next);
 		break;
 	case 'w':
 		width = atoi(EARGF(usage()));
