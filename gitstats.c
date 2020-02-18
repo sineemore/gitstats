@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <regex.h>
 #include <time.h>
 
 static char *argv0;
@@ -14,6 +15,7 @@ static char *argv0;
 
 struct pattern {
 	char *email;
+	regex_t *preg;
 	struct pattern *next;
 };
 
@@ -41,7 +43,7 @@ static void
 usage()
 {
 	die(
-	"usage: %s [-f] [-w width] [-e email] [-W first day of week]\n"
+	"usage: %s [-f] [-w width] [-e email] [-r regex] [-W first day of week]\n"
 	"[-s symbols] [-p placeholder] repo [repo ...]\n",
 	argv0);
 }
@@ -82,6 +84,11 @@ count_commit(git_commit *commit)
 	for (struct pattern *p = patterns; p != NULL; p = p->next) {
 		if (p->email && 0 == strcmp(p->email, author->email))
 			goto match;
+		if (p->preg) {
+			regmatch_t match = {0};
+			if (0 == regexec(p->preg, author->email, 1, &match, 0))
+				goto match;
+		}
 	}
 
 	return;
@@ -161,6 +168,13 @@ main(int argc, char *argv[])
 	case 'e':
 		*pp = calloc(1, sizeof(struct pattern));
 		(*pp)->email = EARGF(usage());
+		pp = &((*pp)->next);
+		break;
+	case 'r':
+		*pp = calloc(1, sizeof(struct pattern));
+		(*pp)->preg = calloc(1, sizeof(regex_t));
+		if (0 != regcomp((*pp)->preg, EARGF(usage()), REG_EXTENDED))
+			die("bad regular expression\n");
 		pp = &((*pp)->next);
 		break;
 	case 'w':
