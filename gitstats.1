@@ -1,0 +1,44 @@
+.TH GITSTATS 1 gitstats
+.SH NAME
+gitstats \- unfancy git commit statistics
+.SH SYNOPSIS
+.B gitstats
+.RB [ \-f ]
+.RB [ \-p
+.IR placeholder ]
+.RB [ \-s
+.IR symbols ]
+.RB [ \-e
+.IR email ]
+.RB [ \-r
+.IR regex ]
+.IR repository
+.RI [ repository ...]
+.SH DESCRIPTION
+.B gitstats
+is a program that outputs commit statistics in specified repositories.
+.SH OPTIONS
+.TP
+.BI \-e " email"
+email
+.TP
+.BI \-r " regex"
+regex
+.TP
+.BI \-p " placeholder"
+placeholder
+.TP
+.BI \-s " symbols"
+symbols
+.TP
+.BI \-f
+ignore non repository directories
+.TP
+.I repository [repository...]
+path to git repository
+.SH AUTHORS
+See the LICENSE file for the authors.
+.SH LICENSE
+See the LICENSE file for the terms of redistribution.
+.SH SEE ALSO
+.BR git (1)
