@@ -23,4 +23,5 @@ $program: $objects
 install:V: $program
 	mkdir -p $PREFIX/bin
 	cp -f $program $PREFIX/bin
+	cp -f $program.1 $PREFIX/share/man/man1/
 	chmod 755 $PREFIX/bin/$program
