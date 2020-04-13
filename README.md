@@ -10,3 +10,5 @@ gitstats shows your commit statistics similar to one at GitHub profile page.
     .........................x......................................x..Sx.
     .x....xx.....x.x....................................................x.
     ......M......x......................................................x.
+
+You may use [stw](https://github.com/sineemore/stw) to render gitstats on your X desktop.
